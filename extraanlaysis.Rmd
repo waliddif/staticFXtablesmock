@@ -1,0 +1,72 @@
+---
+title: "Extra analysis"
+author: "Walid Dif"
+output:
+  html_document:
+    css: EXA_style.css
+    number_sections: yes
+    toc: true
+    toc_float: true
+params:
+  lastd: !r as.Date("2016-10-31")
+---
+*VERSION DATE: `r suppressWarnings(format(Sys.Date(),"%d-%b-%Y"))`*  
+
+```{r setup, include=FALSE}
+
+  require(zoo)
+  require(rpackagemock1)
+  require(rpackagemock2)
+  require(devtools)
+  require(shiny)
+  require(knitr)
+  require(PerformanceAnalytics)
+
+  knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, fig.width=10, fig.height=7, results='asis') # assign global chunk options
+  cids <- paste("ID", 1:5, sep="")
+  cats <- paste("V", 1:10, sep="")
+  load(file="localdata.RData")
+  
+  tab.asset <- t(array(c(
+  "ID1", "Australian dollar",
+  "ID2", "Canadian dollar",
+  "ID3", "Swiss franc",
+  "ID4", "British pound",
+  "ID5", "Japanese yen"),
+  dim=c(2, 5),
+  dimnames=list(c("ASSET", "NAME"), cids)))
+
+  v.desc.ref <- setNames(c(
+  paste("metric", 1:10)), cats)
+
+  f_desctable <- function (df, cid, cats, v.desc){
+    df <- round(df, 3)
+    v.dates <- index(df)[length(index(df)) - c(0, 1, 2, 6, 12)]
+    desctable <- array(rep(NA, 10*5), dim = c(10, 5),
+                       dimnames = list(v.desc.ref, as.character(as.yearmon(rev(v.dates)))))
+    desctable[1:10, 1:5] <- t(coredata(df[v.dates, paste(cid, cats, sep="_")]))
+    desctable
+    }
+```
+
+[Back to Main Page](index.Rmd)
+
+# Extra Assets analysis
+
+## Table
+
+```{r} 
+    knitr::kable(f_desctable(dfm, cid="ID1", cats, v.desc=v.desc.ref),caption = NULL, table.attr = "class=\"flat-table\"")
+```
+
+## Graphs
+
+```{r}
+    boxplot(coredata(dfm[, paste("ID1", cats, sep="_")]), horizontal = T)
+```
+
+```{r}
+    chart.CumReturns(dfm[, paste("ID1", c("V1", "V2", "V3"), sep="_")], geometric=FALSE,
+                     main=tab.asset["ID1", 2], legend.loc="topleft")
+```
+

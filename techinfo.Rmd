@@ -1,0 +1,29 @@
+---
+title: "Technical information"
+author: "Walid Dif"
+output: html_document
+---
+
+[Back to Main Page](index.Rmd)
+
+```{r}
+  require(zoo)
+  require(rpackagemock1)
+  require(rpackagemock2)
+  require(devtools)
+  require(shiny)
+  require(knitr)
+  require(PerformanceAnalytics)
+
+  listpack <- c("rpackagemock1", "rpackagemock2", "zoo", "devtools", "shiny", "knitr", "PerformanceAnalytics")
+  knitr::kable(array(path.package(listpack), dim=c(length(listpack), 1), dimnames=list(listpack, c("pacakge location"))))
+```
+
+```{r}
+  print(Sys.time())
+```
+
+```{r}
+  print(Sys.info())
+```
+

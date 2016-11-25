@@ -1,0 +1,96 @@
+---
+title: "Table and Graphs - Main"
+author: "Walid Dif"
+params:
+  lastd: as.Date("2016-10-31")
+output:
+  html_document:
+    css: EXA_style.css
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+---
+*VERSION DATE: `r suppressWarnings(format(Sys.Date(),"%d-%b-%Y"))`*  
+
+```{r setup, include=FALSE}
+#A.Preparations
+  require(zoo)
+  require(rpackagemock1)
+  require(rpackagemock2)
+  require(devtools)
+  require(shiny)
+  require(knitr)
+  require(PerformanceAnalytics)
+
+  d.lastwd <- params$lastd # start date
+  
+  knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, fig.width=10, fig.height=7, results='asis') # assign global chunk options
+  
+#B. Loading and manual input of required data
+
+  #B.1. Define cross-section identifier and category vectors
+  
+  #a. Cross sections
+  cids <- paste("ID", 1:5, sep="")
+  
+  #b. Categories
+  cats <- paste("V", 1:10, sep="")
+
+	#B.2. Import external data
+
+	#a. Monthly data
+  #dfm <- setNames(zoo(matrix(rnorm(5000, 0, 3), 100, 50),
+  #                    seq(as.Date("2005-01-01"), length=100, by="1 month") - 1),
+  #                as.vector(outer(cids, cats, paste, sep="_")))
+  #save(dfm, file="localdata.RData")
+  #df.dummy <- zoo(matrix(rnorm(10000000, 0, 5), 1000, 10000), seq(as.Date("1981-01-01"), length=1000, by="1 month") - 1)
+  #save(df.dummy, file="largedata.RData")
+  load(file="localdata.RData")
+```
+
+```{r}
+  tab.asset <- t(array(c(
+  "ID1", "Australian dollar",
+  "ID2", "Canadian dollar",
+  "ID3", "Swiss franc",
+  "ID4", "British pound",
+  "ID5", "Japanese yen"),
+  dim=c(2, 5),
+  dimnames=list(c("ASSET", "NAME"), cids)))
+
+  v.desc.ref <- setNames(c(
+  paste("metric", 1:10)), cats)
+```
+
+```{r}
+f_desctable <- function (df, cid, cats, v.desc){
+  df <- round(df, 3)
+  v.dates <- index(df)[length(index(df)) - c(0, 1, 2, 6, 12)]
+  desctable <- array(rep(NA, 10*5), dim = c(10, 5),
+                     dimnames = list(v.desc.ref, as.character(as.yearmon(rev(v.dates)))))
+  desctable[1:10, 1:5] <- t(coredata(df[v.dates, paste(cid, cats, sep="_")]))
+  desctable
+}
+```
+
+[View Technical Infos](techinfo.Rmd)
+
+# Assets analysis
+
+## Table
+
+[Go to Extra Analysis](extraanlaysis.Rmd)
+
+```{r} 
+    knitr::kable(f_desctable(dfm, cid="ID1", cats, v.desc=v.desc.ref),caption = NULL, table.attr = "class=\"flat-table\"")
+```
+
+## Graphs
+
+```{r}
+  f_2line(dfm, cids, c("V10"), bm="GLB", title=tab.asset["ID1", 2], selout="ID1")
+```
+
+```{r}
+  f_2line(dfm, cids, c("V1", "V2"), bm="GLB", title=tab.asset["ID1", 2], selout="ID1")
+```
