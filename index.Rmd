@@ -73,13 +73,13 @@ f_desctable <- function (df, cid, cats, v.desc){
 }
 ```
 
-[View Technical Infos](techinfo.Rmd)
+[View Technical Infos](techinfo.html)
 
 # Assets analysis
 
 ## Table
 
-[Go to Extra Analysis](extraanlaysis.Rmd)
+[Go to Extra Analysis](extraanlaysis.html)
 
 ```{r} 
     knitr::kable(f_desctable(dfm, cid="ID1", cats, v.desc=v.desc.ref),caption = NULL, table.attr = "class=\"flat-table\"")
